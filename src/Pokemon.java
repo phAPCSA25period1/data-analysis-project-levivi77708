@@ -1,7 +1,7 @@
 /**
  * Represents one Pokémon row from the dataset.
  */
-public class Data {
+public class Pokemon {
 
     private final String name;
     private final String primaryType;
@@ -9,14 +9,14 @@ public class Data {
     private final int total;
 
     /**
-     * Constructs a Data object for a Pokémon row.
+     * Constructs a Pokemon object.
      *
      * @param name the Pokémon name
      * @param primaryType the primary type
      * @param secondaryType the secondary type (may be empty)
      * @param total the total stats value (or -1 if unknown)
      */
-    public Data(String name, String primaryType, String secondaryType, int total) {
+    public Pokemon(String name, String primaryType, String secondaryType, int total) {
         this.name = name;
         this.primaryType = primaryType;
         this.secondaryType = secondaryType;

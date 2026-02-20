@@ -66,12 +66,12 @@ UML_Diagram.png (or UML_Diagram.pdf)
 
 ## 🧩 Step 1 — Choose Your Dataset
 
-**Dataset Name:**  
-**Source / Link:**  
+**Dataset Name:** Pokémon Stats (CSV)  
+**Source / Link:** https://www.kaggle.com/datasets/abcsds/pokemon  
 
 **What this dataset contains (2–3 sentences):**  
-____________________________________________________________________  
-____________________________________________________________________  
+This dataset lists Pokémon and their attributes such as name, primary type, secondary type, and total stats.  
+It allows filtering and counting by type to answer questions about type distribution.  
 
 ---
 
@@ -80,8 +80,7 @@ ____________________________________________________________________
 Your guiding question should be something you can answer using your dataset.
 
 **My guiding question:**  
-____________________________________________________________________  
-____________________________________________________________________  
+What is the most common primary and secondary type for the Pokémon?  
 
 Examples:
 
@@ -126,9 +125,10 @@ In `Main.java`, you must:
 
 | Attribute Name | CSV Column Name | Column Index # | Notes |
 |----------------|------------------|----------------|-------|
-|                |                  |                |       |
-|                |                  |                |       |
-|                |                  |                |       |
+| name           | Name             | dynamic        | Found by header |
+| primaryType    | Type 1           | dynamic        | Found by header |
+| secondaryType  | Type 2           | dynamic        | Found by header |
+| total          | Total            | dynamic        | Optional; if missing set to -1 |
 
 ---
 
@@ -145,8 +145,9 @@ You must write **at least two algorithms** to analyze your dataset.
 
 **Algorithms I will implement:**
 
-1. __________________________________________  
-2. __________________________________________  
+1. Count the frequency of primary types and find the most common.  
+2. Count the frequency of secondary types and find the most common.  
+3. Count how many Pokémon are single-type (no secondary type).  
 
 Optional extras:  
 - Sorting  
@@ -165,13 +166,11 @@ After analyzing your objects, print:
 - ✔ A clear answer to your guiding question  
 
 **My findings:**  
-____________________________________________________________________  
-____________________________________________________________________  
-____________________________________________________________________  
+- The program loads all rows from the dataset and counts primary and secondary types.  
+- It prints the most common primary type and secondary type, plus the count of single-type Pokémon.  
 
 **My answer to the guiding question:**  
-____________________________________________________________________  
-____________________________________________________________________  
+Run the program to see the printed result for the most common primary and secondary types in your dataset.  
 
 ---
 
@@ -218,10 +217,10 @@ Write a short reflection (3–5 sentences):
 - How trustworthy are your insights?
 
 **My reflection:**  
-____________________________________________________________________  
-____________________________________________________________________  
-____________________________________________________________________  
-____________________________________________________________________  
+This dataset may omit alternate forms or newer Pokémon depending on version, which can skew type counts.  
+Some rows may be missing secondary types, which affects comparisons between single- and dual-type Pokémon.  
+If the dataset is incomplete or outdated, the most common types could change.  
+The results are trustworthy only for the specific dataset file used.  
 
 ---
 
