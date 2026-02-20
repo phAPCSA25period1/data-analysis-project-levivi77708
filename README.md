@@ -54,12 +54,12 @@ Think simple, clear, and answerable.
 Your repository should follow this structure:
 ```
 /src
-    Main.java
-    YourClass.java
+    App.java
+    Data.java
 /data
-    your_dataset.csv
+    pokemon.csv
 README.md   ← this file
-UML_Diagram.png (or UML_Diagram.pdf)
+UML_Diagram.md (export to PNG/PDF if required)
 ```
 
 ---
@@ -103,6 +103,8 @@ You must create a class that represents **one row** of your dataset.
 - Any additional analysis/helper methods as needed  
 
 ### ✏ Include your class diagram
+
+See [UML_Diagram.md](UML_Diagram.md) for the Mermaid class diagram (export to PNG/PDF if your submission requires it).
 
 
 ---
@@ -204,7 +206,7 @@ Add a UML diagram showing:
 - Methods
 - Visibility (private/public)
 
-Save as `UML_Diagram.png` or `.pdf` in the repo.
+Save as `UML_Diagram.png` or `.pdf` in the repo if required by your teacher. A Mermaid diagram is included in UML_Diagram.md.
 
 ---
 
@@ -250,17 +252,17 @@ Allow the user to choose:
 
 ## ✅ Submission Checklist
 
-- [ ] Dataset selected
-- [ ] Guiding question written
-- [ ] Class created with ≥3 attributes
-- [ ] File reading implemented
-- [ ] ArrayList/array of objects created
-- [ ] At least 2 analysis algorithms implemented
-- [ ] Findings printed
-- [ ] Javadoc comments added
-- [ ] UML diagram included
-- [ ] Reflection completed
-- [ ] Code compiles & runs
+- [x] Dataset selected
+- [x] Guiding question written
+- [x] Class created with ≥3 attributes
+- [x] File reading implemented
+- [x] ArrayList/array of objects created
+- [x] At least 2 analysis algorithms implemented
+- [x] Findings printed
+- [x] Javadoc comments added
+- [ ] UML diagram included (export UML_Diagram.md to PNG/PDF if required)
+- [x] Reflection completed
+- [ ] Code compiles & runs (requires data/pokemon.csv)
 
 ---
 
