@@ -1,6 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -8,245 +8,187 @@ import java.util.Scanner;
 /**
  * Main application for the Data Analysis Mini‑Project.
  *
- * This program loads a Pokémon CSV dataset, analyzes the most common primary
- * and secondary types, and prints insights that answer the guiding question.
+ * TODO:
+ *  - Update the path to your dataset file
+ *  - Read the CSV file using Scanner
+ *  - Parse each row and extract the correct columns
+ *  - Construct Pokemon objects from each row
+ *  - Store them in an array
+ *  - Write methods to analyze the dataset (min, max, average, filters, etc.)
+ *  - Print insights and answer your guiding question
+ *  - Add Javadoc comments for any methods you create
  */
 public class App {
 
     /**
-     * Runs the program and prints the analysis results.
+     * Loads Pokemon data from CSV, runs analysis, and prints results.
      *
      * @param args command-line arguments (not used)
      */
     public static void main(String[] args) {
-        // Update this if your CSV is stored elsewhere.
+
         File file = new File("data/pokemon.csv");
 
-        ArrayList<Data> pokemonList = new ArrayList<>();
+        Pokemon[] data = loadPokemonData(file);
 
-        try (Scanner scanner = new Scanner(file)) {
-            if (!scanner.hasNextLine()) {
-                System.out.println("The CSV file is empty.");
-                return;
-            }
-
-            String headerLine = scanner.nextLine();
-            String[] headers = splitCsvLine(headerLine);
-
-            int nameIndex = findColumnIndex(headers, "Name");
-            int primaryTypeIndex = findColumnIndex(headers, "Type 1", "Type1", "Primary Type", "PrimaryType");
-            int secondaryTypeIndex = findColumnIndex(headers, "Type 2", "Type2", "Secondary Type", "SecondaryType");
-            int totalIndex = findColumnIndex(headers, "Total", "Total Stats", "TotalStats");
-
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                if (line.trim().isEmpty()) {
-                    continue;
-                }
-
-                String[] parts = splitCsvLine(line);
-                if (!hasRequiredColumns(parts, nameIndex, primaryTypeIndex)) {
-                    continue;
-                }
-
-                String name = safeGet(parts, nameIndex).trim();
-                String primaryType = safeGet(parts, primaryTypeIndex).trim();
-                String secondaryType = secondaryTypeIndex >= 0 ? safeGet(parts, secondaryTypeIndex).trim() : "";
-                int total = totalIndex >= 0 ? parseIntSafe(safeGet(parts, totalIndex).trim(), -1) : -1;
-
-                if (name.isEmpty() || primaryType.isEmpty()) {
-                    continue;
-                }
-
-                pokemonList.add(new Data(name, primaryType, secondaryType, total));
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("Could not find the CSV file at: " + file.getPath());
+        if (data.length == 0) {
+            System.out.println("No Pokemon rows were loaded. Check your file path and data format.");
             return;
         }
 
-        if (pokemonList.isEmpty()) {
-            System.out.println("No data rows were loaded. Check your CSV file format.");
-            return;
-        }
+        String mostCommonPrimary = findMostCommonType(data, true);
+        String mostCommonSecondary = findMostCommonType(data, false);
+        double averageTotal = computeAverageTotal(data);
+        Pokemon strongest = findPokemonWithMaxTotal(data);
 
-        Map<String, Integer> primaryCounts = countTypes(pokemonList, false);
-        Map<String, Integer> secondaryCounts = countTypes(pokemonList, true);
-
-        String mostCommonPrimary = findMostCommonKey(primaryCounts);
-        String mostCommonSecondary = findMostCommonKey(secondaryCounts);
-
-        Integer primaryCountValue = mostCommonPrimary.isEmpty() ? null : primaryCounts.get(mostCommonPrimary);
-        Integer secondaryCountValue = mostCommonSecondary.isEmpty() ? null : secondaryCounts.get(mostCommonSecondary);
-        int mostCommonPrimaryCount = primaryCountValue == null ? 0 : primaryCountValue;
-        int mostCommonSecondaryCount = secondaryCountValue == null ? 0 : secondaryCountValue;
-        int singleTypeCount = countSingleType(pokemonList);
-        double averageTotal = computeAverageTotal(pokemonList);
-
-        System.out.println("Rows loaded: " + pokemonList.size());
-        System.out.println("Most common primary type: " + mostCommonPrimary + " (" + mostCommonPrimaryCount + ")");
-        System.out.println("Most common secondary type: " + mostCommonSecondary + " (" + mostCommonSecondaryCount + ")");
-        System.out.println("Single-type Pokémon count: " + singleTypeCount);
-
-        if (averageTotal >= 0) {
-            System.out.printf("Average total stats: %.2f%n", averageTotal);
-        }
+        System.out.println("Rows loaded: " + data.length);
+        System.out.println("Most common primary type: " + mostCommonPrimary);
+        System.out.println("Most common secondary type: " + mostCommonSecondary);
+        System.out.printf("Average total stat: %.2f%n", averageTotal);
+        System.out.println("Pokemon with highest total: " + strongest);
 
         System.out.println();
-        System.out.println("Answer: The most common primary type is " + mostCommonPrimary
+        System.out.println("Guiding question answer:");
+        System.out.println("The most common primary type is " + mostCommonPrimary
                 + ", and the most common secondary type is " + mostCommonSecondary + ".");
     }
 
     /**
-     * Splits a CSV line using a simple comma delimiter.
+     * Reads the CSV file and builds an array of Pokemon objects.
      *
-     * @param line the CSV line
-     * @return an array of column values
+     * @param file the CSV file to read
+     * @return an array containing all successfully parsed Pokemon rows
      */
-    public static String[] splitCsvLine(String line) {
-        return line.split(",", -1);
-    }
+    public static Pokemon[] loadPokemonData(File file) {
+        Pokemon[] temp = new Pokemon[16];
+        int size = 0;
 
-    /**
-     * Finds the index of a column name from a header row.
-     *
-     * @param headers array of header names
-     * @param possibleNames possible header names for the column
-     * @return the index if found; otherwise -1
-     */
-    public static int findColumnIndex(String[] headers, String... possibleNames) {
-        for (int i = 0; i < headers.length; i++) {
-            String header = headers[i].trim().toLowerCase();
-            for (String possible : possibleNames) {
-                if (header.equals(possible.toLowerCase())) {
-                    return i;
+        try (Scanner scanner = new Scanner(file)) {
+            if (scanner.hasNextLine()) {
+                scanner.nextLine();
+            }
+
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (line.isEmpty()) {
+                    continue;
                 }
+
+                String[] columns = line.split(",", -1);
+                if (columns.length < 4) {
+                    continue;
+                }
+
+                String name = columns[0].trim();
+                String primaryType = columns[1].trim();
+                String secondaryType = columns[2].trim();
+
+                int total;
+                try {
+                    total = Integer.parseInt(columns[3].trim());
+                } catch (NumberFormatException ex) {
+                    continue;
+                }
+
+                if (size == temp.length) {
+                    temp = growArray(temp);
+                }
+
+                temp[size] = new Pokemon(name, primaryType, secondaryType, total);
+                size++;
             }
+        } catch (FileNotFoundException ex) {
+            System.out.println("File not found: " + file.getPath());
+            return new Pokemon[0];
         }
-        return -1;
+
+        return Arrays.copyOf(temp, size);
     }
 
     /**
-     * Checks that required columns exist for the current row.
+     * Creates a larger array and copies all elements into it.
      *
-     * @param parts the CSV row split into parts
-     * @param requiredIndices required column indices
-     * @return true if all required indices are valid for this row
+     * @param original the original Pokemon array
+     * @return a new array with double capacity
      */
-    public static boolean hasRequiredColumns(String[] parts, int... requiredIndices) {
-        for (int index : requiredIndices) {
-            if (index < 0 || index >= parts.length) {
-                return false;
-            }
-        }
-        return true;
+    public static Pokemon[] growArray(Pokemon[] original) {
+        return Arrays.copyOf(original, original.length * 2);
     }
 
     /**
-     * Safely gets a column value or an empty string if out of range.
+     * Finds the most common type in the dataset.
      *
-     * @param parts the CSV row split into parts
-     * @param index the column index
-     * @return the column value or empty string
+     * @param data the Pokemon array
+     * @param usePrimary true for primary type, false for secondary type
+     * @return the most common type label
      */
-    public static String safeGet(String[] parts, int index) {
-        if (index < 0 || index >= parts.length) {
-            return "";
-        }
-        return parts[index];
-    }
-
-    /**
-     * Parses an integer, returning a fallback if parsing fails.
-     *
-     * @param value the string value
-     * @param fallback the fallback value
-     * @return parsed integer or fallback
-     */
-    public static int parseIntSafe(String value, int fallback) {
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            return fallback;
-        }
-    }
-
-    /**
-     * Counts primary or secondary type frequencies.
-     *
-     * @param list list of Pokémon
-     * @param useSecondary whether to count secondary types
-     * @return a map of type name to count
-     */
-    public static Map<String, Integer> countTypes(ArrayList<Data> list, boolean useSecondary) {
+    public static String findMostCommonType(Pokemon[] data, boolean usePrimary) {
         Map<String, Integer> counts = new HashMap<>();
-        for (Data pokemon : list) {
-            String type = useSecondary ? pokemon.getSecondaryType() : pokemon.getPrimaryType();
-            if (type == null || type.trim().isEmpty()) {
+
+        for (Pokemon pokemon : data) {
+            String type = usePrimary ? pokemon.getPrimaryType() : pokemon.getSecondaryType();
+
+            if (!usePrimary && type.isEmpty()) {
                 continue;
             }
-            String normalized = type.trim();
-            counts.put(normalized, counts.getOrDefault(normalized, 0) + 1);
-        }
-        return counts;
-    }
 
-    /**
-     * Finds the key with the highest value in a map.
-     *
-     * @param counts map of string keys to counts
-     * @return the key with the highest count, or an empty string if none
-     */
-    public static String findMostCommonKey(Map<String, Integer> counts) {
-        String bestKey = "";
-        int bestCount = -1;
-        for (Map.Entry<String, Integer> entry : counts.entrySet()) {
-            if (entry.getValue() > bestCount) {
-                bestKey = entry.getKey();
-                bestCount = entry.getValue();
+            counts.put(type, counts.getOrDefault(type, 0) + 1);
+        }
+
+        if (counts.isEmpty()) {
+            return "None";
+        }
+
+        String mostCommon = "";
+        int highestCount = -1;
+
+        for (String type : counts.keySet()) {
+            int count = counts.get(type);
+            if (count > highestCount) {
+                highestCount = count;
+                mostCommon = type;
             }
         }
-        return bestKey;
+
+        return mostCommon + " (" + highestCount + ")";
     }
 
     /**
-     * Counts Pokémon that do not have a secondary type.
+     * Computes the average total stat across all Pokemon.
      *
-     * @param list list of Pokémon
-     * @return number of single-type Pokémon
+     * @param data the Pokemon array
+     * @return the average total stat value
      */
-    public static int countSingleType(ArrayList<Data> list) {
-        int count = 0;
-        for (Data pokemon : list) {
-            String secondary = pokemon.getSecondaryType();
-            if (secondary == null || secondary.trim().isEmpty()) {
-                count++;
-            }
+    public static double computeAverageTotal(Pokemon[] data) {
+        if (data.length == 0) {
+            return 0.0;
         }
-        return count;
-    }
 
-    /**
-     * Computes the average of the total stats column, if available.
-     *
-     * @param list list of Pokémon
-     * @return average total stats, or -1 if no totals were available
-     */
-    public static double computeAverageTotal(ArrayList<Data> list) {
-        int count = 0;
         int sum = 0;
-        for (Data pokemon : list) {
-            int total = pokemon.getTotal();
-            if (total >= 0) {
-                sum += total;
-                count++;
-            }
+        for (Pokemon pokemon : data) {
+            sum += pokemon.getTotal();
         }
-        if (count == 0) {
-            return -1;
-        }
-        return (double) sum / count;
+        return (double) sum / data.length;
     }
 
+    /**
+     * Finds the Pokemon with the highest total stat value.
+     *
+     * @param data the Pokemon array
+     * @return the Pokemon with the largest total, or null if empty
+     */
+    public static Pokemon findPokemonWithMaxTotal(Pokemon[] data) {
+        if (data.length == 0) {
+            return null;
+        }
+
+        Pokemon best = data[0];
+        for (int i = 1; i < data.length; i++) {
+            if (data[i].getTotal() > best.getTotal()) {
+                best = data[i];
+            }
+        }
+        return best;
+    }
 
 }

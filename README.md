@@ -1,4 +1,3 @@
-[![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=22615700)
 # AP CSA Mini‑Project: Data Analysis with Arrays & File Input
 ### Using CSV Files • Arrays of Objects • Algorithms • Data Ethics & Quality
 
@@ -54,24 +53,23 @@ Think simple, clear, and answerable.
 Your repository should follow this structure:
 ```
 /src
-    App.java
-    Data.java
+    Main.java
+    YourClass.java
 /data
-    pokemon.csv
+    your_dataset.csv
 README.md   ← this file
-UML_Diagram.md (export to PNG/PDF if required)
+UML_Diagram.png (or UML_Diagram.pdf)
 ```
 
 ---
 
 ## 🧩 Step 1 — Choose Your Dataset
 
-**Dataset Name:** Pokémon Stats (CSV)  
-**Source / Link:** https://www.kaggle.com/datasets/abcsds/pokemon  
+**Dataset Name:**  pokemon.csv
+**Source / Link:**  https://runestone.academy/ns/books/published/csawesome2/external/_static/datasets/pokemon.csv
 
 **What this dataset contains (2–3 sentences):**  
-This dataset lists Pokémon and their attributes such as name, primary type, secondary type, and total stats.  
-It allows filtering and counting by type to answer questions about type distribution.  
+The data set contains information about each pokemon such as its name, type 1, type 2, HP, attack, and speed. It also includes a link with a photo of the pokemon.  
 
 ---
 
@@ -80,7 +78,7 @@ It allows filtering and counting by type to answer questions about type distribu
 Your guiding question should be something you can answer using your dataset.
 
 **My guiding question:**  
-What is the most common primary and secondary type for the Pokémon?  
+What is the most common primary and secondary type for the pokemon?  
 
 Examples:
 
@@ -102,9 +100,52 @@ You must create a class that represents **one row** of your dataset.
 - **`toString()`** for easy printing  
 - Any additional analysis/helper methods as needed  
 
-### ✏ Include your class diagram
+### ✅ My class design (`Pokemon`)
 
-See [UML_Diagram.md](UML_Diagram.md) for the Mermaid class diagram (export to PNG/PDF if your submission requires it).
+This class represents one row from `pokemon.csv`.
+
+**Private attributes:**
+- `name : String`
+- `primaryType : String`
+- `secondaryType : String`
+- `total : int`
+
+**Constructor:**
+- `Pokemon(String name, String primaryType, String secondaryType, int total)`
+
+**Getters used for analysis:**
+- `getName()`
+- `getPrimaryType()`
+- `getSecondaryType()`
+- `getTotal()`
+
+**Helper method:**
+- `hasSecondaryType()`
+
+**String output:**
+- `toString()`
+
+### ✏ Class Diagram (UML)
+
+```text
++-----------------------------------------------+
+|                    Pokemon                    |
++-----------------------------------------------+
+| - name: String                                |
+| - primaryType: String                         |
+| - secondaryType: String                       |
+| - total: int                                  |
++-----------------------------------------------+
+| + Pokemon(name: String, primaryType: String,  |
+|           secondaryType: String, total: int)  |
+| + getName(): String                           |
+| + getPrimaryType(): String                    |
+| + getSecondaryType(): String                  |
+| + getTotal(): int                             |
+| + hasSecondaryType(): boolean                 |
+| + toString(): String                          |
++-----------------------------------------------+
+```
 
 
 ---
@@ -127,10 +168,10 @@ In `Main.java`, you must:
 
 | Attribute Name | CSV Column Name | Column Index # | Notes |
 |----------------|------------------|----------------|-------|
-| name           | Name             | dynamic        | Found by header |
-| primaryType    | Type 1           | dynamic        | Found by header |
-| secondaryType  | Type 2           | dynamic        | Found by header |
-| total          | Total            | dynamic        | Optional; if missing set to -1 |
+| name           | Name             | 0              | String text value |
+| primaryType    | Type 1           | 1              | String text value |
+| secondaryType  | Type 2           | 2              | May be empty (`""`) |
+| total          | Total            | 3              | Parse as `int` |
 
 ---
 
@@ -140,16 +181,16 @@ You must write **at least two algorithms** to analyze your dataset.
 
 ### Required: Choose 2 or more algorithms
 - [ ] Minimum value of attribute  
-- [ ] Maximum value of attribute  
-- [ ] Average of attribute  
+- [x] Maximum value of attribute  
+- [x] Average of attribute  
 - [ ] Filter by category  
-- [ ] Count items matching a condition  
+- [x] Count items matching a condition  
 
 **Algorithms I will implement:**
 
-1. Count the frequency of primary types and find the most common.  
-2. Count the frequency of secondary types and find the most common.  
-3. Count how many Pokémon are single-type (no secondary type).  
+1. Find the Pokémon with the highest `total` stat (maximum).  
+2. Compute the average `total` stat across all Pokémon (average).  
+3. Count frequencies of `primaryType` and `secondaryType` to find the most common type (count by category).  
 
 Optional extras:  
 - Sorting  
@@ -168,45 +209,37 @@ After analyzing your objects, print:
 - ✔ A clear answer to your guiding question  
 
 **My findings:**  
-- The program loads all rows from the dataset and counts primary and secondary types.  
-- It prints the most common primary type and secondary type, plus the count of single-type Pokémon.  
+Rows loaded: 12.  
+Most common primary type: Water (3); most common secondary type: Poison (3).  
+Average total stat: 380.75, and the Pokémon with the highest total is Charizard (534).  
 
 **My answer to the guiding question:**  
-Run the program to see the printed result for the most common primary and secondary types in your dataset.  
+In this dataset, the most common primary type is **Water (3)**.  
+The most common secondary type is **Poison (3)**.  
 
 ---
 
 ## 📝 Step 7 — Documentation Requirements
 
-### ✔ Javadoc Comments
-You MUST use Javadoc for:
+### ✅ Javadoc Comments (Completed)
 
-- Every **class**  
-- Every **method**  
-- Every **parameter**  
-- Every **return value**  
+I added Javadoc for:
 
-Example:
-```java
-/**
- * Returns the highest HP among all Pokémon.
- * @param list the ArrayList of Pokémon objects
- * @return highest HP value in the dataset
- */
-public static int findMaxHP(ArrayList<Pokemon> list) {
-    // implementation
-}
-```
+- Every class (`App` and `Pokemon`)  
+- Every method used in the project  
+- Every parameter (`@param`)  
+- Every return value (`@return`) where applicable  
 
-### ✔ UML Class Diagram
-Add a UML diagram showing:
+### ✅ UML Class Diagram (Completed)
 
-- Class name
-- Attributes
-- Methods
-- Visibility (private/public)
+I included the UML class diagram for `Pokemon` in Step 3 with:
 
-Save as `UML_Diagram.png` or `.pdf` in the repo if required by your teacher. A Mermaid diagram is included in UML_Diagram.md.
+- Class name  
+- Attributes  
+- Methods  
+- Visibility (`+` public, `-` private)  
+
+If needed for submission format, I can also export this diagram as a separate `UML_Diagram.png` or `.pdf` file.
 
 ---
 
@@ -219,10 +252,7 @@ Write a short reflection (3–5 sentences):
 - How trustworthy are your insights?
 
 **My reflection:**  
-This dataset may omit alternate forms or newer Pokémon depending on version, which can skew type counts.  
-Some rows may be missing secondary types, which affects comparisons between single- and dual-type Pokémon.  
-If the dataset is incomplete or outdated, the most common types could change.  
-The results are trustworthy only for the specific dataset file used.  
+An issue found was that some pokemon were missing secondary types which can effect the count. The dataset could be biased because it doesnt include updates about the pokemon. If information is missing in inacurate the results could be wrong.  
 
 ---
 
@@ -260,9 +290,9 @@ Allow the user to choose:
 - [x] At least 2 analysis algorithms implemented
 - [x] Findings printed
 - [x] Javadoc comments added
-- [ ] UML diagram included (export UML_Diagram.md to PNG/PDF if required)
+- [x] UML diagram included
 - [x] Reflection completed
-- [ ] Code compiles & runs (requires data/pokemon.csv)
+- [x] Code compiles & runs
 
 ---
 
